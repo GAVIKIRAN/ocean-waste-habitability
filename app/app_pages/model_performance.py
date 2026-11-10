@@ -6,14 +6,13 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from ui import get_config
+from ui import page_header, get_config
 
 from src.utils.app_helpers import load_json
 from src.utils.common import resolve_path
 
 cfg = get_config()
-st.title("Model performance", anchor=False)
-st.caption("Metrics and plots saved by the evaluation scripts in `reports/`. Re-run `python -m src.waste.evaluate` / `python -m src.water.evaluate` to refresh.")
+page_header("Model performance", ":material/analytics:", "Metrics and plots saved by the evaluation scripts in `reports/`. Re-run `python -m src.waste.evaluate` / `python -m src.water.evaluate` to refresh.")
 rep = resolve_path(cfg["paths"]["reports"])
 
 

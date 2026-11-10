@@ -20,26 +20,26 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 import plotly.graph_objects as go  # noqa: E402
 
-SURFACE = "#0b2236"
-PAGE_BG = "#04121f"
-TEXT = "#e6f1f8"
-TEXT_MUTED = "#9db4c6"
-GRID = "rgba(157,180,198,0.15)"
-SERIES = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"]
-STATUS = {"green": "#0ca30c", "amber": "#fab219", "red": "#d03b3b", "unknown": "#6b7f90"}
+SURFACE = "#ffffff"
+PAGE_BG = "#f6f8fb"
+TEXT = "#0e1b2e"
+TEXT_MUTED = "#64748b"
+GRID = "rgba(100,116,139,0.14)"
+SERIES = ["#0b6e8a", "#2bb3a3", "#e0a341", "#4f78b8", "#d9666f", "#7c6cc4", "#5e9e6b", "#94a3b8"]
+STATUS = {"green": "#1e9e6f", "amber": "#c9821a", "red": "#d04a55", "unknown": "#94a3b8"}
 STATUS_LABEL = {"green": "Within guideline", "amber": "Borderline", "red": "Outside guideline", "unknown": "Not provided"}
 STATUS_ICON = {"green": "✔", "amber": "▲", "red": "✖", "unknown": "–"}
 
 
 def _layout(fig: go.Figure, title: str | None = None, height: int = 360) -> go.Figure:
     fig.update_layout(
-        title=dict(text=title, font=dict(size=15, color=TEXT), x=0, xanchor="left") if title else None,
+        title=dict(text=title, font=dict(size=15, color=TEXT, family="Manrope, Inter, sans-serif"), x=0, xanchor="left") if title else None,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=TEXT, size=12),
+        font=dict(color=TEXT, size=12, family="Inter, Segoe UI, sans-serif"),
         margin=dict(l=10, r=20, t=50 if title else 15, b=10),
         height=height,
-        hoverlabel=dict(bgcolor=SURFACE, font_color=TEXT, bordercolor=SERIES[0]),
+        hoverlabel=dict(bgcolor="#ffffff", font_color=TEXT, bordercolor=SERIES[0]),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
     )
     fig.update_xaxes(gridcolor=GRID, zerolinecolor=GRID, linecolor=GRID, color=TEXT_MUTED)
@@ -175,7 +175,7 @@ def site_map(df: pd.DataFrame, title: str = "Logged sites") -> go.Figure:
                                     marker=dict(size=14, color=STATUS[b]), text=part["site_name"], customdata=part[["score", "kind"]].to_numpy(),
                                     hovertemplate="<b>%{text}</b><br>Score %{customdata[0]:.0f} (%{customdata[1]})<extra></extra>"))
     center = dict(lat=float(d["lat"].mean()), lon=float(d["lon"].mean())) if not d.empty else dict(lat=0, lon=0)
-    fig.update_layout(map=dict(style="carto-darkmatter", center=center, zoom=2 if len(d) > 1 else 5))
+    fig.update_layout(map=dict(style="carto-positron", center=center, zoom=2 if len(d) > 1 else 5))
     return _layout(fig, title, height=420)
 
 

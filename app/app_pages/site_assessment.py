@@ -5,7 +5,7 @@ import re
 
 import streamlit as st
 
-from ui import get_config, get_db, get_detector, get_water_predictor, site_inputs, status_badge
+from ui import page_header, get_config, get_db, get_detector, get_water_predictor, site_inputs, status_badge
 
 from src.utils.app_helpers import bgr_to_rgb, decode_image, validate_coordinates, validate_water_inputs
 from src.utils.plots import class_counts_bar, parameter_range_chart, score_gauge
@@ -13,8 +13,7 @@ from src.utils.report import build_report, report_to_pdf, status_text
 
 cfg = get_config()
 g = cfg["water"]["guidelines"]
-st.title("Combined site assessment", anchor=False)
-st.caption("Survey one location: an underwater image for litter plus water-quality readings produce a single Ocean Health Report with a grade and recommended actions.")
+page_header("Site reports", ":material/assignment:", "Survey one location: an underwater image for litter plus water-quality readings produce a single Ocean Health Report with a grade and recommended actions.")
 
 det, wp = get_detector(), get_water_predictor()
 if det is None and wp is None:
@@ -83,8 +82,8 @@ if submitted:
 
 if "site_report" in st.session_state:
     report, detection, assessment, pdf = st.session_state["site_report"]
-    st.divider()
-    st.subheader(f"Ocean Health Report · {report.site_name}", anchor=False)
+    st.space("medium")
+    st.subheader(f"Ocean Health Report · {report.site_name}", anchor=False, icon=":material/health_and_safety:")
     band = "green" if report.combined_score >= 70 else "amber" if report.combined_score >= 50 else "red"
     st.markdown(f"{status_badge(band, f'Grade {report.grade} · {status_text(report.combined_score)}')} &nbsp; :gray-badge[{report.timestamp}]")
     c0, c1, c2 = st.columns(3)

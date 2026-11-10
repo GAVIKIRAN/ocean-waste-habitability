@@ -3,11 +3,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-from ui import get_config
+from ui import page_header, get_config
 
 cfg = get_config()
-st.title("About this project", anchor=False)
-st.caption("Methodology, data sources and the limits of what these models can tell you.")
+page_header("About", ":material/info:", "Methodology, data sources and the limits of what these models can tell you.")
 
 st.subheader("Methodology", anchor=False)
 st.markdown(

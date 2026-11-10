@@ -9,7 +9,7 @@ import cv2
 import pandas as pd
 import streamlit as st
 
-from ui import get_config, get_db, get_detector, site_inputs, train_first
+from ui import page_header, get_config, get_db, get_detector, site_inputs, train_first
 
 from src.utils.app_helpers import bgr_to_rgb, decode_image, df_to_csv_bytes, encode_png, mean_confidence, validate_coordinates
 from src.utils.plots import class_counts_bar
@@ -17,8 +17,7 @@ from src.utils.report import waste_score
 
 cfg = get_config()
 inf = cfg["waste"]["inference"]
-st.title("Underwater waste detection", anchor=False)
-st.caption("Detect and classify marine litter with YOLO11. Turn on enhancement for murky, low-contrast footage.")
+page_header("Live detection", ":material/radar:", "Detect and classify marine litter with YOLO11. Turn on underwater enhancement in the sidebar for murky, low-contrast footage.")
 
 with st.sidebar:
     st.subheader("Detection settings", anchor=False)

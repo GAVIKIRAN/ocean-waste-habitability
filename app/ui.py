@@ -17,6 +17,19 @@ from src.utils.db import HistoryDB  # noqa: E402
 BADGE = {"green": "green", "amber": "orange", "red": "red", "unknown": "gray"}
 
 
+LOGO = Path(__file__).resolve().parent / "assets" / "logo.svg"
+LOGO_ICON = Path(__file__).resolve().parent / "assets" / "logo_icon.svg"
+
+
+def page_header(title: str, icon: str, subtitle: str, tag: str | None = None) -> None:
+    """Consistent page header: icon title, one-line subtitle and an optional section tag."""
+    if tag:
+        st.badge(tag, color="blue")
+    st.title(title, icon=icon, anchor=False)
+    st.caption(subtitle)
+    st.space("small")
+
+
 @st.cache_resource(show_spinner=False)
 def get_config() -> dict[str, Any]:
     return load_config()
@@ -48,12 +61,13 @@ def render_sidebar_status(cfg: dict[str, Any]) -> None:
     waste_ok = resolve_path(cfg["waste"]["weights"]).exists()
     water_ok = resolve_path(cfg["water"]["model_path"]).exists()
     with st.sidebar:
-        st.caption("System status")
-        st.markdown(
-            f"Waste model {':green-badge[:material/check: trained]' if waste_ok else ':orange-badge[:material/warning: demo fallback]'}  \n"
-            f"Water model {':green-badge[:material/check: trained]' if water_ok else ':red-badge[:material/close: not trained]'}  \n"
-            f":gray-badge[:material/memory: {device_label()}]"
-        )
+        with st.container(border=True):
+            st.caption("System status")
+            st.markdown(
+                f":material/radar: Waste model  \n{':green-badge[:material/check: Trained]' if waste_ok else ':orange-badge[:material/warning: Demo fallback]'}  \n"
+                f":material/water_drop: Water model  \n{':green-badge[:material/check: Trained]' if water_ok else ':red-badge[:material/close: Not trained]'}  \n"
+                f":material/memory: Compute  \n:gray-badge[{device_label()}]"
+            )
 
 
 @st.cache_resource(show_spinner="Loading YOLO11 waste detector...", max_entries=2)

@@ -1,19 +1,59 @@
 [theme]
-base = "dark"
-primaryColor = "#2ec4b6"
-linkColor = "#5ad6ca"
-backgroundColor = "#04121f"
-secondaryBackgroundColor = "#0b2236"
-textColor = "#e6f1f8"
-borderColor = "#1d3b55"
-baseRadius = "0.6rem"
-showSidebarBorder = true
-chartCategoricalColors = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"]
+base = "light"
 
+# Brand: deep-ocean teal on a crisp, cool-white canvas
+primaryColor = "#0B6E8A"
+linkColor = "#0B6E8A"
+backgroundColor = "#F6F8FB"
+secondaryBackgroundColor = "#ECF1F6"
+textColor = "#0E1B2E"
+borderColor = "#DCE4EC"
+codeBackgroundColor = "#ECF1F6"
+codeTextColor = "#0E1B2E"
+
+# Semantic palette, tuned to sit with the brand teal
+greenColor = "#1E9E6F"
+orangeColor = "#C9821A"
+redColor = "#D04A55"
+blueColor = "#2F6FB3"
+violetColor = "#6E5BC7"
+grayColor = "#64748B"
+
+# Typography
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "Manrope:https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+baseFontSize = 15
+headingFontSizes = ["2rem", "1.4rem", "1.1rem", "1rem", "0.9rem", "0.8rem"]
+headingFontWeights = [800, 700, 700, 600, 600, 600]
+metricValueFontSize = "2rem"
+metricValueFontWeight = 700
+linkUnderline = false
+
+# Shape and spacing
+baseRadius = "14px"
+buttonRadius = "10px"
+showSidebarBorder = false
+paddingTop = "2rem"
+paddingBottom = "3rem"
+
+# Charts and tables
+chartCategoricalColors = ["#0B6E8A", "#2BB3A3", "#E0A341", "#4F78B8", "#D9666F", "#7C6CC4", "#5E9E6B", "#94A3B8"]
+chartSequentialColors = ["#E6F4F7", "#C6E6EC", "#9FD3DE", "#74BDCD", "#4AA5BB", "#2A8CA6", "#0B6E8A", "#0A5B73", "#08485C", "#063546"]
+dataframeHeaderBackgroundColor = "#ECF1F6"
+dataframeBorderColor = "#DCE4EC"
+
+# Deep-navy sidebar: full contrast set so every widget stays legible
 [theme.sidebar]
-backgroundColor = "#071a2b"
-secondaryBackgroundColor = "#0b2236"
-textColor = "#e6f1f8"
+backgroundColor = "#0A1A2F"
+secondaryBackgroundColor = "#13284A"
+textColor = "#E4ECF5"
+borderColor = "#1E3558"
+primaryColor = "#3FC1D6"
+linkColor = "#8FDDEA"
+codeBackgroundColor = "#13284A"
+codeTextColor = "#E4ECF5"
+paddingTop = "1.25rem"
 
 [server]
 maxUploadSize = 500

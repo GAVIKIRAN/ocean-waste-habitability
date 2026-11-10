@@ -6,12 +6,11 @@ import json
 import pandas as pd
 import streamlit as st
 
-from ui import get_db
+from ui import get_db, page_header
 
 from src.utils.plots import SERIES, class_counts_bar, site_map, trend_chart, two_way_bar
 
-st.title("Monitoring dashboard", anchor=False)
-st.caption("Everything logged from the detection, water-test and site-assessment pages, stored locally in SQLite.")
+page_header("History", ":material/monitoring:", "Trends, waste mix, water screening and survey locations from the records saved by this installation.")
 
 db = get_db()
 waste, water, reports = db.waste_history(), db.water_history(), db.report_history()
@@ -22,11 +21,12 @@ if waste.empty and water.empty and reports.empty:
 
 # ---- filters (one row, above the charts)
 all_ts = pd.concat([d["timestamp"] for d in (waste, water, reports) if not d.empty])
-with st.container(horizontal=True, vertical_alignment="bottom"):
-    lo, hi = all_ts.min().date(), all_ts.max().date()
-    rng = st.date_input("Date range", (lo, hi), min_value=lo, max_value=hi)
-    sites = sorted({s for d in (waste, water, reports) if not d.empty for s in d["site_name"].dropna().unique()})
-    pick = st.multiselect("Sites", sites, placeholder="All sites")
+with st.container(border=True):
+    with st.container(horizontal=True, vertical_alignment="bottom"):
+        lo, hi = all_ts.min().date(), all_ts.max().date()
+        rng = st.date_input("Date range", (lo, hi), min_value=lo, max_value=hi)
+        sites = sorted({s for d in (waste, water, reports) if not d.empty for s in d["site_name"].dropna().unique()})
+        pick = st.multiselect("Sites", sites, placeholder="All sites")
 
 
 def filt(d: pd.DataFrame) -> pd.DataFrame:
@@ -42,11 +42,11 @@ def filt(d: pd.DataFrame) -> pd.DataFrame:
 waste, water, reports = filt(waste), filt(water), filt(reports)
 
 with st.container(horizontal=True):
-    st.metric("Waste scans", len(waste), border=True)
-    st.metric("Items detected", int(waste["n_detections"].sum()) if not waste.empty else 0, border=True)
-    st.metric("Water tests", len(water), border=True)
-    st.metric("Potable share", f"{water['potable'].mean():.0%}" if not water.empty else "–", border=True)
-    st.metric("Mean site score", f"{reports['combined_score'].mean():.0f}" if not reports.empty else "–", border=True)
+    st.metric("Waste scans", len(waste), border=True, icon=":material/photo_library:")
+    st.metric("Items detected", int(waste["n_detections"].sum()) if not waste.empty else 0, border=True, icon=":material/scatter_plot:")
+    st.metric("Water tests", len(water), border=True, icon=":material/water_drop:")
+    st.metric("Potable share", f"{water['potable'].mean():.0%}" if not water.empty else "–", border=True, icon=":material/verified:")
+    st.metric("Mean site score", f"{reports['combined_score'].mean():.0f}" if not reports.empty else "–", border=True, icon=":material/eco:")
 
 left, right = st.columns(2)
 with left.container(border=True):

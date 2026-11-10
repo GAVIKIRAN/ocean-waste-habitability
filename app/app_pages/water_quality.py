@@ -4,7 +4,7 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from ui import get_config, get_db, get_water_predictor, site_inputs, status_badge, train_first
+from ui import page_header, get_config, get_db, get_water_predictor, site_inputs, status_badge, train_first
 
 from src.utils.app_helpers import df_to_csv_bytes, read_water_csv, validate_coordinates, validate_water_inputs
 from src.utils.plots import parameter_range_chart, probability_gauge, score_gauge, shap_waterfall
@@ -12,8 +12,7 @@ from src.water.predict import WaterAssessment
 
 cfg = get_config()
 g = cfg["water"]["guidelines"]
-st.title("Water quality test", anchor=False)
-st.caption("Predict whether water is potable from its physico-chemical parameters, check each one against WHO/EPA guideline ranges, and see which parameters drove the result.")
+page_header("Water quality", ":material/water_drop:", "Predict whether water is potable from its physico-chemical parameters, check each one against WHO/EPA guideline ranges, and see which parameters drove the result.")
 
 wp = get_water_predictor()
 if wp is None:
@@ -62,7 +61,7 @@ if mode == "Single sample":
                 v = st.number_input(label, min_value=float(lo), max_value=float(hi) * 10, value=float(gi["default"]), step=(hi - lo) / 1000.0, format="%.4g", key=f"v_{f}")
                 measured = st.checkbox("Measured", value=True, key=f"m_{f}", help=f"Untick if {gi['label']} was not measured")
                 values[f] = v if measured else None
-        st.divider()
+        st.space("small")
         name, lat, lon = site_inputs("water")
         submitted = st.form_submit_button("Assess water", type="primary", icon=":material/science:")
     if submitted:
