@@ -1,0 +1,302 @@
+# =============================================================================
+# Ocean Waste Detection and Water Habitability Test - central configuration
+# All paths are relative to the project root (the folder containing this file).
+# =============================================================================
+
+project:
+  name: "Ocean Waste Detection and Water Habitability Test"
+  seed: 42
+  log_level: INFO
+
+paths:
+  data_raw: data/raw
+  data_processed: data/processed
+  models: models
+  reports: reports
+  db: data/history.db
+
+# -----------------------------------------------------------------------------
+# Image preprocessing (underwater enhancement)
+# -----------------------------------------------------------------------------
+preprocessing:
+  dehaze:
+    patch_size: 15        # dark-channel min-filter window
+    omega: 0.95           # haze removal strength (0..1)
+    t0: 0.1               # lower bound for transmission
+    top_percent: 0.001    # brightest dark-channel pixels used for airlight
+    guided_radius: 40     # guided filter radius for transmission refinement
+    guided_eps: 0.001
+  clahe:
+    clip_limit: 2.0
+    tile_grid: 8
+  denoise:
+    h: 5                  # fastNlMeansDenoisingColored strength
+    fast: true            # use bilateral filter instead of NL-means (real-time)
+  white_balance: false    # gray-world white balance (optional)
+
+# -----------------------------------------------------------------------------
+# Module 1 - Underwater waste detection (YOLO11)
+# -----------------------------------------------------------------------------
+waste:
+  # Unified class list (index = YOLO class id). Every dataset is mapped onto it.
+  classes:
+    - plastic_bottle
+    - plastic            # bags, film, sheets and unidentified plastic
+    - can
+    - glass
+    - metal
+    - rope_net
+    - fishing_gear
+    - rubber_tire        # tyres and other rubber items
+    - cloth
+    - paper_cardboard
+    - wood
+    - cup_container
+    - wrapper
+    - pipe
+    - other_debris
+
+  # Source-dataset label -> unified class. `null` drops the label (e.g. animals).
+  class_mapping:
+    # TrashCan 1.0 (material / instance version)
+    trash_bottle: plastic_bottle
+    trash_bag: plastic
+    trash_can: can
+    trash_cup: cup_container
+    trash_container: cup_container
+    trash_snack_wrapper: wrapper
+    trash_net: rope_net
+    trash_rope: rope_net
+    trash_tarp: plastic
+    trash_wreckage: metal
+    trash_clothing: cloth
+    trash_pipe: pipe
+    trash_branch: wood
+    trash_unknown_instance: other_debris
+    trash_etc: other_debris
+    trash_fabric: cloth
+    trash_fishing_gear: fishing_gear
+    trash_metal: metal
+    trash_paper: paper_cardboard
+    trash_plastic: plastic
+    trash_rubber: rubber_tire
+    trash_wood: wood
+    rov: null
+    plant: null
+    bio: null
+    animal_fish: null
+    animal_starfish: null
+    animal_shells: null
+    animal_crab: null
+    animal_eel: null
+    animal_etc: null
+    # Common Roboflow "underwater trash" label names
+    bottle: plastic_bottle
+    plastic_bottle: plastic_bottle
+    plastic: plastic
+    bag: plastic
+    plastic_bag: plastic
+    rubber: rubber_tire
+    rubber_tire: rubber_tire
+    can: can
+    tin: can
+    glass: glass
+    glass_bottle: glass
+    metal: metal
+    net: rope_net
+    rope: rope_net
+    fishing_net: rope_net
+    fishing_gear: fishing_gear
+    lure: fishing_gear
+    tire: rubber_tire
+    tyre: rubber_tire
+    cloth: cloth
+    fabric: cloth
+    paper: paper_cardboard
+    cardboard: paper_cardboard
+    wood: wood
+    cup: cup_container
+    container: cup_container
+    wrapper: wrapper
+    pipe: pipe
+    debris: other_debris
+    trash: other_debris
+    garbage: other_debris
+    other: other_debris
+    # Kaggle "Underwater Plastic Pollution Detection" (arnavs19, CC BY 4.0)
+    pbottle: plastic_bottle
+    pbag: plastic
+    gbottle: glass
+    rod: fishing_gear
+    glove: cloth
+    mask: cloth
+    cellphone: other_debris
+    electronics: other_debris
+    sunglasses: other_debris
+    misc: other_debris
+
+  # Real datasets used by default when no --source-dir/--sources is given (entries whose folder
+  # does not exist are skipped; if none exist, everything under data/raw is used instead).
+  source_dirs:
+    # - trashcan=dataset/dataset/material_version   # TrashCan 1.0 (deep-sea ROV footage) - disabled
+    - underwater_plastic=archive/underwater_plastics # Kaggle "Underwater Plastic Pollution Detection" (YOLO format)
+  dataset_dir: data/processed/yolo   # merged YOLO dataset (images/ + labels/)
+  dataset_yaml: data/waste.yaml      # regenerated automatically with absolute path
+  split: [0.7, 0.2, 0.1]             # train / val / test
+  weights: models/waste_best.pt      # exported best checkpoint
+  demo_weights: yolo11n.pt           # COCO-pretrained fallback used if no trained weights
+
+  synthetic:
+    n_images: 400
+    width: 640
+    height: 480
+    max_objects: 5
+
+  train:
+    model: yolo11s.pt                # default (fits 6 GB VRAM at 640/batch 8)
+    fallback_model: yolo11n.pt       # used after repeated CUDA OOM
+    epochs: 100
+    patience: 20
+    imgsz: 640
+    batch: 8                         # -1 = Ultralytics auto-batch
+    workers: 2                       # capped to 2 on Windows
+    optimizer: Adam
+    lr0: 0.001
+    lrf: 0.01
+    weight_decay: 0.0005
+    amp: true
+    cache: false                     # false | "disk" | "ram"
+    save_period: 10                  # checkpoint every N epochs
+    project: runs/waste
+    name: train
+    # augmentation
+    fliplr: 0.5
+    flipud: 0.1
+    degrees: 10.0
+    translate: 0.1
+    scale: 0.5
+    hsv_h: 0.015
+    hsv_s: 0.7
+    hsv_v: 0.4
+    mosaic: 1.0
+    mixup: 0.0
+    close_mosaic: 10
+
+  demo:                              # quick mode: finishes in minutes
+    model: yolo11n.pt
+    epochs: 15
+    patience: 10
+    imgsz: 416
+    batch: 16
+    save_period: -1
+
+  low_vram:
+    model: yolo11n.pt
+    imgsz: 512
+    batch: 4
+
+  tune:
+    backend: optuna                  # optuna | ultralytics
+    n_trials: 10
+    epochs_per_trial: 5
+    demo_n_trials: 2
+    demo_epochs_per_trial: 2
+
+  inference:
+    conf: 0.25
+    iou: 0.45
+    half: true                       # FP16 on CUDA
+    imgsz: 640
+    max_video_frames: 900
+    max_det: 1000                    # max boxes per image (dense debris scenes)
+    high_recall_tiles: 3             # tile grid used by "high recall" mode (3 = 3x3 tiles + full image)
+
+# -----------------------------------------------------------------------------
+# Module 2 - Water potability (XGBoost)
+# -----------------------------------------------------------------------------
+water:
+  data_file: data/raw/water_potability.csv
+  download_urls:                     # public mirrors of the Kaggle dataset
+    - https://raw.githubusercontent.com/MainakRepositor/Datasets/master/water_potability.csv
+  kaggle_dataset: adityakadiwal/water-potability
+  target: Potability
+  features:
+    - ph
+    - Hardness
+    - Solids
+    - Chloramines
+    - Sulfate
+    - Conductivity
+    - Organic_carbon
+    - Trihalomethanes
+    - Turbidity
+  optional_features: [Lead, Mercury]  # used automatically when present in the CSV
+  test_size: 0.2
+  cv_folds: 5
+  scale_features: false              # trees do not need scaling; kept as an option
+  imbalance: scale_pos_weight        # scale_pos_weight | smote | none
+  device: cpu                        # cpu | cuda
+  model_path: models/xgb_water.json
+  meta_path: models/xgb_water_meta.json
+  test_split_path: data/processed/water_test.csv
+  threshold: 0.5
+  base_params:
+    objective: binary:logistic
+    eval_metric: auc
+    tree_method: hist
+  tuning:
+    method: both                     # optuna | grid | both
+    n_trials: 60
+    demo_n_trials: 15
+    optuna_space:
+      max_depth: [3, 10]
+      learning_rate: [0.01, 0.3]
+      n_estimators: [100, 800]
+      subsample: [0.6, 1.0]
+      colsample_bytree: [0.5, 1.0]
+      gamma: [0.0, 5.0]
+      min_child_weight: [1, 10]
+      reg_lambda: [0.0, 5.0]
+    grid:
+      max_depth: [4, 6, 8]
+      learning_rate: [0.05, 0.1]
+      n_estimators: [200, 400]
+      subsample: [0.8]
+      colsample_bytree: [0.8]
+    demo_grid:
+      max_depth: [4, 6]
+      learning_rate: [0.1]
+      n_estimators: [200]
+
+  # WHO / EPA drinking-water guideline ranges used for traffic-light checks.
+  # safe -> green, warn -> amber, outside warn -> red. null = no bound.
+  guidelines:
+    ph:              {label: "pH",               unit: "",         safe: [6.5, 8.5],  warn: [6.0, 9.0],   slider: [0.0, 14.0],    default: 7.2}
+    Hardness:        {label: "Hardness",         unit: "mg/L",     safe: [null, 300], warn: [null, 500],  slider: [0.0, 500.0],   default: 180.0}
+    Solids:          {label: "Total dissolved solids", unit: "ppm", safe: [null, 600], warn: [null, 1000], slider: [0.0, 60000.0], default: 450.0}
+    Chloramines:     {label: "Chloramines",      unit: "ppm",      safe: [null, 4.0], warn: [null, 5.0],  slider: [0.0, 14.0],    default: 3.0}
+    Sulfate:         {label: "Sulfate",          unit: "mg/L",     safe: [null, 250], warn: [null, 500],  slider: [0.0, 500.0],   default: 200.0}
+    Conductivity:    {label: "Conductivity",     unit: "uS/cm",    safe: [null, 400], warn: [null, 800],  slider: [0.0, 800.0],   default: 350.0}
+    Organic_carbon:  {label: "Organic carbon",   unit: "ppm",      safe: [null, 2.0], warn: [null, 4.0],  slider: [0.0, 30.0],    default: 2.0}
+    Trihalomethanes: {label: "Trihalomethanes",  unit: "ug/L",     safe: [null, 80],  warn: [null, 100],  slider: [0.0, 130.0],   default: 50.0}
+    Turbidity:       {label: "Turbidity",        unit: "NTU",      safe: [null, 1.0], warn: [null, 5.0],  slider: [0.0, 10.0],    default: 0.8}
+    Lead:            {label: "Lead",             unit: "mg/L",     safe: [null, 0.01], warn: [null, 0.015], slider: [0.0, 0.1], default: 0.005}
+    Mercury:         {label: "Mercury",          unit: "mg/L",     safe: [null, 0.006], warn: [null, 0.01], slider: [0.0, 0.05], default: 0.001}
+
+  # habitability score = model_weight * P(potable) + (1 - model_weight) * guideline compliance
+  habitability:
+    model_weight: 0.6
+
+# -----------------------------------------------------------------------------
+# Combined "Ocean Health Report"
+# -----------------------------------------------------------------------------
+report:
+  waste_weight: 0.5                  # combined = w * waste_score + (1-w) * water_score
+  per_object_penalty: 6.0            # points lost per detected item
+  area_penalty: 120.0                # points lost per unit of image area covered by debris
+  grades:                            # minimum combined score for each grade
+    A: 85
+    B: 70
+    C: 55
+    D: 40
+    E: 0

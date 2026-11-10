@@ -1,0 +1,23 @@
+[theme]
+base = "dark"
+primaryColor = "#2ec4b6"
+linkColor = "#5ad6ca"
+backgroundColor = "#04121f"
+secondaryBackgroundColor = "#0b2236"
+textColor = "#e6f1f8"
+borderColor = "#1d3b55"
+baseRadius = "0.6rem"
+showSidebarBorder = true
+chartCategoricalColors = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"]
+
+[theme.sidebar]
+backgroundColor = "#071a2b"
+secondaryBackgroundColor = "#0b2236"
+textColor = "#e6f1f8"
+
+[server]
+maxUploadSize = 500
+headless = true
+
+[browser]
+gatherUsageStats = false

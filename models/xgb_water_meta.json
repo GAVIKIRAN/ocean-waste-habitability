@@ -1,0 +1,101 @@
+{
+  "features": [
+    "ph",
+    "Hardness",
+    "Solids",
+    "Chloramines",
+    "Sulfate",
+    "Conductivity",
+    "Organic_carbon",
+    "Trihalomethanes",
+    "Turbidity"
+  ],
+  "impute_medians": [
+    7.035036795196814,
+    196.92806093779083,
+    20866.335842223954,
+    7.118161983426347,
+    333.073545745888,
+    424.94133573042495,
+    14.214779561341032,
+    66.56570894421057,
+    3.9696018473949692
+  ],
+  "threshold": 0.5,
+  "created": "2026-11-10T04:03:57+00:00",
+  "mode": "demo",
+  "device": "cpu",
+  "tuning": {
+    "grid": {
+      "params": {
+        "learning_rate": 0.1,
+        "max_depth": 6,
+        "n_estimators": 200
+      },
+      "cv_roc_auc": 0.6615
+    },
+    "optuna": {
+      "params": {
+        "max_depth": 9,
+        "learning_rate": 0.013668251728928608,
+        "n_estimators": 800,
+        "subsample": 0.8580637297062554,
+        "colsample_bytree": 0.8965915045076521,
+        "gamma": 4.352814949330461,
+        "min_child_weight": 6,
+        "reg_lambda": 2.8654731496832166
+      },
+      "cv_roc_auc": 0.6767
+    }
+  },
+  "selected": "optuna",
+  "params": {
+    "max_depth": 9,
+    "learning_rate": 0.013668251728928608,
+    "n_estimators": 800,
+    "subsample": 0.8580637297062554,
+    "colsample_bytree": 0.8965915045076521,
+    "gamma": 4.352814949330461,
+    "min_child_weight": 6,
+    "reg_lambda": 2.8654731496832166
+  },
+  "imbalance": "scale_pos_weight",
+  "scale_pos_weight": 1.5636,
+  "n_train": 2620,
+  "n_test": 656,
+  "class_balance": {
+    "potable": 1022,
+    "non_potable": 1598
+  },
+  "cv_metrics": {
+    "accuracy": {
+      "mean": 0.6473,
+      "std": 0.0047
+    },
+    "precision": {
+      "mean": 0.5479,
+      "std": 0.0046
+    },
+    "recall": {
+      "mean": 0.5479,
+      "std": 0.0446
+    },
+    "f1": {
+      "mean": 0.547,
+      "std": 0.0228
+    },
+    "roc_auc": {
+      "mean": 0.6767,
+      "std": 0.0158
+    }
+  },
+  "test_metrics": {
+    "accuracy": 0.6265,
+    "precision": 0.5224,
+    "recall": 0.5,
+    "f1": 0.511,
+    "roc_auc": 0.6799
+  },
+  "train_seconds": 19.8,
+  "data_source": "mirror:https://raw.githubusercontent.com/MainakRepositor/Datasets/master/water_potability.csv"
+}

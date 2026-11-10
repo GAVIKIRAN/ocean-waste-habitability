@@ -1,0 +1,4 @@
+# Optional extras
+gradio>=4.40          # alternative UI: python app_gradio.py
+kaggle>=1.6           # official Kaggle download of the water dataset
+roboflow>=1.1         # Roboflow Universe underwater-trash datasets

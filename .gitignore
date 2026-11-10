@@ -1,0 +1,69 @@
+
+# Python environments
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+
+# Testing and cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Dataset archives
+dataset/
+dataset.zip
+archive/
+archive.zip
+trash_ICRA19/
+trash_ICRA19.zip
+
+# Data storage
+data/raw/
+data/processed/
+data/history.db
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# YOLO training outputs
+runs/
+wandb/
+
+# Model weights
+models/*.pt
+models/*.pth
+models/*.onnx
+models/*.engine
+models/*.ckpt
+
+# Reports generated during execution
+reports/*
+
+# Preserve empty directories if needed
+!models/.gitkeep
+!reports/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+*.tmp
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

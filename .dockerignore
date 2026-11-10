@@ -1,0 +1,11 @@
+.venv
+runs
+__pycache__
+.pytest_cache
+data/raw
+data/processed
+dataset
+dataset.zip
+reports/waste/full_train.log
+archive
+archive.zip
